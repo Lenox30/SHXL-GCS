@@ -1,4 +1,5 @@
 {
+  "horusecCliFalsePositiveHashes": ["3b19d8c1a57ecd539d55f52dd9dd57bb11b3605836de9ef584ef6c60e4e384a8"],
   "horusecCliSeverityTypes": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
   "horusecCliPrintOutputType": "text",
   "horusecCliReturnErrorIfFoundVulnerability": true,

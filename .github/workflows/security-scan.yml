@@ -46,7 +46,7 @@ jobs:
         curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
         
         # Ejecutar Horusec con configuración
-        ./horusec start -p="./" -e="true" --config-file-path="./horusec-config.json" -D || exit_code=$?
+        horusec start -p="./" -e="true" --config-file-path="./horusec-config.json" -D || exit_code=$?
         
         # Verificar resultado
         if [ ${exit_code:-0} -ne 0 ]; then

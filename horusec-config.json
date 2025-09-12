@@ -1,0 +1,15 @@
+{
+  "horusecCliSeverityTypes": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+  "horusecCliPrintOutputType": "text",
+  "horusecCliReturnErrorIfFoundVulnerability": true,
+  "horusecCliFilesOrPathsToIgnore": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.git/**",
+    "**/coverage/**"
+  ],
+  "horusecCliEnableGitHistoryAnalysis": true,
+  "horusecCliCertInsecureSkipVerify": false,
+  "horusecCliVerbose": true
+}

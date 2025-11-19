@@ -2,7 +2,7 @@ name: Build
 on:
   push:
     branches:
-      - main
+      - ImplementationSonar
   pull_request:
     types: [opened, synchronize, reopened]
 

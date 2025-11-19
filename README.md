@@ -1,100 +1,264 @@
-# Secret Hitler XL
+# Integración de SonarQube con GitHub Actions
 
-A Python implementation of the Secret Hitler XL game, a variant of the popular Secret Hitler game with additional mechanics including a communist faction.
+## 📋 Tabla de Contenidos
+- [Introducción](#introducción)
+- [Configuración del Proyecto](#configuración-del-proyecto)
+- [Configuración de GitHub Actions](#configuración-de-github-actions)
+- [Configuración de SonarQube](#configuración-de-sonarqube)
+- [Resultados y Análisis](#resultados-y-análisis)
+- [Problemas Encontrados](#problemas-encontrados)
 
-## Overview
+## Introducción
 
-This implementation provides a complete, object-oriented implementation of the Secret Hitler XL game, following the rules from the Secret Hitler XL Handbook. It supports 6-16 players, includes communists, anti-policies, and emergency powers, and uses proper design patterns to create a flexible, maintainable codebase.
+Este documento detalla el proceso de integración de **SonarQube Cloud** con nuestro repositorio de GitHub para realizar análisis estático de código automático en cada push y pull request.
 
-## Features
+SonarQube nos permite:
+- 🔍 Detectar bugs y vulnerabilidades de seguridad
+- 📊 Medir la calidad del código (code smells)
+- 📈 Obtener métricas de mantenibilidad
+- 🔒 Identificar security hotspots
 
-- Support for 6-16 players
-- Communist faction in addition to Liberals and Fascists
-- Policy trackers with presidential powers
-- Anti-policies and emergency powers
-- All game mechanics from the Secret Hitler XL Handbook
-- AI players with different strategies
-- Comprehensive logging for game events
+## Configuración del Proyecto
 
-## Design Patterns
+### 1. Archivo `sonar-project.properties`
 
-The implementation uses several design patterns:
+Creamos el archivo de configuración en la raíz del proyecto:
 
-- **Factory Pattern**: Used for roles, policies, and players, allowing easy creation of these objects.
-- **Strategy Pattern**: Used for AI player behaviors, allowing different strategies to be plugged in.
-- **State Pattern**: Used for game phases, allowing the game to transition smoothly between different phases.
-- **Command Pattern**: Used for presidential powers, encapsulating each power as a separate command.
+```properties
+sonar.projectKey=Lenox30_SHXL-GCS
+sonar.organization=lenox30
 
-## Project Structure
+# Nombre del proyecto
+sonar.projectName=SHXL-GCS
 
-- `src/`: Source code
-  - `board/`: Game board and state tracking
-  - `game/`: Main game logic and phases
-  - `players/`: Player implementations including AI
-  - `policies/`: Policy implementations
-  - `roles/`: Role implementations
-- `tests/`: Unit tests
-- `features/`: Cucumber feature files for behavior-driven testing
-  - `steps/`: Cucumber test step implementations
+# Rutas del código a analizar
+sonar.sources=backend, frontend
 
-## Running the Game
+# Configuración para Python
+sonar.python.version=3.10
 
-To run the game:
+# Configuración para JavaScript
+sonar.javascript.node.maxspace=4096
 
-```bash
-python src/main.py --players 8 --strategy random
+# Encoding
+sonar.sourceEncoding=UTF-8
 ```
 
-Command-line options:
+**Parámetros importantes:**
+- `sonar.projectKey`: Identificador único del proyecto en SonarQube
+- `sonar.organization`: Organización de SonarQube Cloud
+- `sonar.sources`: Directorios que contienen el código fuente a analizar
 
-- `--players`: Number of players (6-16)
-- `--no-communists`: Disable communist faction
-- `--anti-policies`: Enable anti-policies
-- `--emergency-powers`: Enable emergency powers
-- `--strategy`: AI strategy (random, role, smart)
-- `--seed`: Random seed for reproducibility
+## Configuración de GitHub Actions
 
-## Running Tests
+### 2. Workflow de CI/CD (`.github/workflows/build.yml`)
 
-To run the unit tests:
+Configuramos el workflow para ejecutar el análisis de SonarQube:
 
-```bash
-python -m unittest discover -s tests
+```yaml
+name: Build
+on:
+  push:
+    branches:
+      - ImplementationSonar
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  sonarqube:
+    name: SonarQube
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Importante para el análisis completo
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Python deps (opcional)
+        run: pip install -r requirements.txt || true
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 ```
 
-Or use the makefile:
+**Características del workflow:**
+- ✅ Se ejecuta en cada push a las ramas `main` e `ImplementationSonar`
+- ✅ Se ejecuta en pull requests (opened, synchronize, reopened)
+- ✅ Usa `fetch-depth: 0` para obtener todo el historial de Git (necesario para análisis de código nuevo)
+- ✅ Instala dependencias de Python antes del análisis
+- ✅ Utiliza el token de SonarQube almacenado en GitHub Secrets
 
-```bash
-make test
-```
+### 3. Configuración del Token en GitHub
 
-To run Cucumber/Behave tests:
+Para que GitHub Actions pueda comunicarse con SonarQube Cloud, necesitamos:
 
-```bash
-python -m behave
-```
+1. **Generar token en SonarQube Cloud:**
+   - Ir a Account → Security → Generate Token
+   - Copiar el token generado
 
-Or use the makefile:
+2. **Configurar Secret en GitHub:**
+   - Ir a Settings → Secrets and variables → Actions
+   - Crear un nuevo secret llamado `SONAR_TOKEN`
+   - Pegar el token de SonarQube
 
-```bash
-make cucumber
-```
+## Configuración de SonarQube
 
-To run all tests:
+### 4. Panel de SonarQube Cloud
 
-```bash
-make all-tests
-```
+![SonarQube Issues](Imagenes/AnalisisSonarQube.png)
 
-For more information about the Cucumber tests, see [docs/cucumber_tests.md](docs/cucumber_tests.md).
+En el panel de SonarQube podemos observar:
 
-## Future Enhancements
+**Métricas del proyecto:**
+- 📊 **239 Issues** detectados con un esfuerzo estimado de **3d 6h**
+- 🔴 **67 High severity** issues
+- 🟠 **146 Medium severity** issues  
+- 🟡 **100 Low severity** issues
 
-1. Integration with a user interface
-2. Improved AI strategies
-3. Network play
-4. Game statistics and analysis
+**Categorías de problemas:**
+- **Reliability (70)**: Bugs que pueden causar comportamientos incorrectos
+- **Maintainability (239)**: Code smells que afectan la mantenibilidad
+- **Security (0)**: Sin vulnerabilidades detectadas
 
-## License
+**Tipos de issues:**
+- **Bug (8)**: Errores que deben corregirse
+- **Code Smell (239)**: Problemas de mantenibilidad
 
-[MIT License](LICENSE)
+**Filtros disponibles:**
+- Por severidad: High, Medium, Low
+- Por tipo: Bug, Vulnerability, Code Smell
+- Por atributo de código: Consistency, Intentionality, Adaptability
+
+### 5. Dashboard Principal - Quality Gate
+
+![Main Branch Summary](Imagenes/sumarry.png)
+
+El dashboard principal muestra el estado del **Quality Gate**:
+
+**Estado del Análisis:**
+- ✅ **Quality Gate: Passed** (Sonar way)
+- 📊 **26k Lines of Code**
+- 🕐 Last analysis: 13 minutes ago
+
+**Métricas por Categoría:**
+- 🔒 **Security**: 0 Open Issues - Rating: A
+- 🐛 **Reliability**: 78 Open Issues - Rating: C
+- 🔧 **Maintainability**: 239 Open Issues - Rating: A
+
+**Otras Métricas:**
+- ✅ **Accepted Issues**: 0
+- 📊 **Coverage**: 0.0% (No conditions set on 10k Lines to cover)
+- 🔄 **Duplications**: 1.7% (No conditions set on 37k Lines)
+- ⚠️ **Security Hotspots**: 176 to review
+
+### 6. Análisis por Módulo
+
+![Project Structure Analysis](Imagenes/codigo.png)
+
+SonarQube analiza el proyecto dividido en módulos:
+
+**Backend (15,561 líneas):**
+- Security: 0 issues
+- Reliability: 2 issues
+- Maintainability: 134 issues
+- Security Hotspots: 175
+- Coverage: 0.0%
+- Duplications: 2.5%
+
+**Frontend (10,625 líneas):**
+- Security: 0 issues
+- Reliability: 76 issues
+- Maintainability: 105 issues
+- Security Hotspots: 1
+- Coverage: 0.0%
+- Duplications: 0.0%
+
+### 7. Security Hotspots
+
+![Security Hotspots](/imagenes/Security.png)
+
+SonarQube identificó **176 Security Hotspots** que requieren revisión manual:
+
+- 🔴 **1 Cross-Site Request Forgery (CSRF)** - High Priority
+  - Ubicación: `backend/src/api/app.py` línea 28
+  - Advertencia: "Make sure disabling CSRF protection is safe here"
+  - Se detectó el uso de `app = Flask(__name__)` con CSRF deshabilitado
+
+- 🟠 **Permission (1)** - Medium Priority
+- 🟠 **Weak Cryptography (167)** - Medium Priority
+- 🟡 **Insecure Configuration (3)** - Low Priority
+- 🟡 **Others (4)** - Low Priority
+
+**Status:** 0.0% de Security Hotspots revisados
+
+## Resultados y Análisis
+
+### 8. Ejecución en GitHub Actions
+
+![GitHub Actions Build](Imagenes/SonarPassed.png)
+
+El workflow se ejecutó exitosamente con los siguientes pasos:
+
+1. ✅ **Set up job** (3s)
+2. ✅ **Run actions/checkout@v4** (8s)
+3. ✅ **Set up Python** (8s)
+4. ✅ **Install Python deps (opcional)** (1m 13s)
+5. ✅ **SonarQube Scan** (1m 28s) - ⭐ Paso principal
+6. ✅ **Post Set up Python** (8s)
+7. ✅ **Post Run actions/checkout@v4** (2s)
+8. ✅ **Complete job** (8s)
+
+**Tiempo total de ejecución:** ~3 minutos
+
+## Problemas Encontrados
+
+### Issues de Alta Prioridad
+
+Según el análisis de SonarQube, los principales problemas a resolver son:
+
+1. **Complejidad Cognitiva (backend/features/environment.py)**
+   - 🔴 High Priority - Maintainability
+   - Cognitive Complexity: 27 (máximo permitido: 15)
+   - Esfuerzo: 17min
+   - Tags: `architecture`, `brain-overload`
+
+2. **Parámetros de función sin usar**
+   - 🟠 Medium Priority - Maintainability  
+   - Múltiples ocurrencias del parámetro "scenario" sin usar
+   - Esfuerzo: 5min cada uno
+   - Tag: `unused`
+
+3. **Manejo de excepciones**
+   - 🔴 High Priority - Maintainability
+   - "Specify an exception class to catch or reraise the exception"
+   - Esfuerzo: 5min
+   - Tags: `bad-practice`, `error-handling`
+
+4. **Métodos vacíos (backend/features/steps/abstract_player_steps.py)**
+   - 🟢 Low Priority - Intentionality
+   - "Add a nested comment explaining why this method is empty, or complete the implementation"
+
+## Conclusiones
+
+La integración de SonarQube ha sido exitosa y nos proporciona:
+
+- ✅ Análisis automático en cada commit y PR
+- ✅ Visibilidad completa de la calidad del código
+- ✅ Detección temprana de bugs y vulnerabilidades
+- ✅ Métricas cuantificables para mejorar el código
+
+**Estado actual del proyecto:**
+- 239 issues detectados
+- 0 vulnerabilidades de seguridad críticas
+- 176 security hotspots pendientes de revisión
+- Technical debt: 3 días 6 horas
+
+

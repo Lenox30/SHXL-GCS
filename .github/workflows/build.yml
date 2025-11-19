@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - ImplementationSonar
+      - main
   pull_request:
     types: [opened, synchronize, reopened]
 

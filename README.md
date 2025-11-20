@@ -113,7 +113,7 @@ Para que GitHub Actions pueda comunicarse con SonarQube Cloud, necesitamos:
 
 ### 4. Panel de SonarQube Cloud
 
-![SonarQube Issues](Imagenes/AnalisisSonarQube.png)
+![SonarQube Issues](imagenes/AnalisisSonarQube.png)
 
 En el panel de SonarQube podemos observar:
 

@@ -203,7 +203,7 @@ SonarQube identificó **176 Security Hotspots** que requieren revisión manual:
 
 ### 8. Ejecución en GitHub Actions
 
-![GitHub Actions Build](Imagenes/SonarPassed.png)
+![GitHub Actions Build](imagenes/SonarPassed.png)
 
 El workflow se ejecutó exitosamente con los siguientes pasos:
 

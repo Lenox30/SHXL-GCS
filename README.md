@@ -139,7 +139,7 @@ En el panel de SonarQube podemos observar:
 
 ### 5. Dashboard Principal - Quality Gate
 
-![Main Branch Summary](Imagenes/sumarry.png)
+![Main Branch Summary](imagenes/sumarry.png)
 
 El dashboard principal muestra el estado del **Quality Gate**:
 
@@ -161,7 +161,7 @@ El dashboard principal muestra el estado del **Quality Gate**:
 
 ### 6. Análisis por Módulo
 
-![Project Structure Analysis](Imagenes/codigo.png)
+![Project Structure Analysis](imagenes/codigo.png)
 
 SonarQube analiza el proyecto dividido en módulos:
 

@@ -183,7 +183,7 @@ SonarQube analiza el proyecto dividido en módulos:
 
 ### 7. Security Hotspots
 
-![Security Hotspots](/imagenes/Security.png)
+![Security Hotspots](imagenes/Security.png)
 
 SonarQube identificó **176 Security Hotspots** que requieren revisión manual:
 
